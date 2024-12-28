@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ReflectCall - Text-Based Chat Service</title>
+    <title>ReflectCall - Email-Based Text Chat Service</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,6 +62,9 @@
 </head>
 <body>
     <div class="chat-container">
+        <div class="email-input">
+            <input type="email" id="emailInput" placeholder="Enter email to message" />
+        </div>
         <div class="messages" id="messages"></div>
         <div class="message-input">
             <input type="text" id="messageInput" placeholder="Type your message here..." />
@@ -72,24 +75,27 @@
     <script>
         const ws = new WebSocket('ws://localhost:8080');
         const messagesDiv = document.getElementById('messages');
+        const emailInput = document.getElementById('emailInput');
         const messageInput = document.getElementById('messageInput');
 
         ws.onmessage = event => {
             const message = JSON.parse(event.data);
             const messageElement = document.createElement('div');
-            messageElement.textContent = message.content;
+            messageElement.textContent = `[${message.email}]: ${message.content}`;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         };
 
         function sendMessage() {
+            const email = emailInput.value;
             const messageContent = messageInput.value;
-            if (messageContent) {
-                ws.send(JSON.stringify({ content: messageContent }));
+            if (email && messageContent) {
+                ws.send(JSON.stringify({ email, content: messageContent }));
                 messageInput.value = '';
             }
         }
     </script>
 </body>
 </html>
+
 
